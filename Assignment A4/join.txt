@@ -180,3 +180,23 @@
 
 	
 10. Perform Manipulation on simple view-Insert, update, delete, drop view.
+
+
+	MariaDB [Te3139db]> CREATE view simple_view AS
+	SELECT * FROM department;
+	Query OK, 0 rows affected (0.03 sec)
+
+	MariaDB [Te3139db]> SELECT * FROM simple_view;
+
+	MariaDB [Te3139db]> INSERT INTO simple_view VALUES("Insert values here");
+	Query OK, 1 row affected (0.02 sec)
+
+	MariaDB [Te3139db]> UPDATE simple_view SET prof_id = 1 WHERE city="Ahmednagar";
+	Query OK, 1 row affected (0.03 sec)
+	Rows matched: 1  Changed: 1  Warnings: 0
+
+	MariaDB [Te3139db]> DELETE FROM simple_view WHERE city = "Mumbai";
+	Query OK, 1 row affected (0.02 sec)
+
+	MariaDB [Te3139db]> DROP VIEW simple_view;
+	Query OK, 0 rows affected (0.00 sec)
