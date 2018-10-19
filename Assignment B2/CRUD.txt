@@ -1,8 +1,8 @@
 Design and Develop MongoDB Queries using CRUD operations. (Use CRUD operations, SAVE method, logical operators)
 
-
 [exam12@localhost bin]$ ./mongo 10.10.10.54/Te3139db -u te3139 -p
 MongoDB shell version v4.0.1
+
 
 > show collections
 mycollection
