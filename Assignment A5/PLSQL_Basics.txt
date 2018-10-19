@@ -1,0 +1,149 @@
+[student@shell ~]$ su
+Password: 
+[root@shell student]# /etc/init.d/oracle-xe restart
+Restarting oracle-xe (via systemctl):  cd /u01/app/oracle/p[  OK  ]1.2.0/xe/bin
+[root@shell student]# cd /u01/app/oracle/product/11.2.0/xe/bin
+[root@shell bin]# . ./oracle_env.sh
+[root@shell bin]# sqlplus system
+
+SQL*Plus: Release 11.2.0.2.0 Production on Tue Jul 24 10:49:15 2018
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+Enter password: 
+				
+				(system)
+
+Connected to:
+Oracle Database 11g Express Edition Release 11.2.0.2.0 - 64bit Production
+
+SQL> prompt
+
+SQL> set serveroutput on
+
+
+SQL> declare
+  2  cid number;
+  3  begin
+  4  cid:=&id;													(note that right hand side can be anything you want)
+  5  dbms_output.put_line(cid);
+  6  exception
+  7  when no_data_found then   
+  8  dbms_output.put_line('cust doesnt exist');
+  9  END;
+ 10  /
+Enter value for id: 50
+old   4: cid:=&id;
+new   4: cid:=50;
+50
+
+PL/SQL procedure successfully completed.
+
+
+
+
+SQL> CREATE TABLE Customer(Cust_id integer, Name varchar(50), DateOfPayment date, NameofScheme varchar(20), Status varchar(20));
+
+Table created.
+
+SQL> ALTER TABLE Customer ADD PRIMARY KEY (Cust_id);
+
+Table altered.
+
+SQL> CREATE TABLE Fine(Cust_id integer, Dates Date, Amt integer, FOREIGN KEY(Cust_id) REFERENCES Customer(Cust_id) ON DELETE CASCADE);
+
+Table created.
+
+SQL> ALTER TABLE Fine MODIFY Cust_id integer not null;
+
+Table altered.
+
+==========================================1. Accept Cust_id & name of scheme from user.============================================
+
+SQL> DECLARE
+Cid number;
+Name varchar(50);
+DOP date;
+NOS varchar(20);
+Status varchar(20);
+BEGIN
+Cid:=&id;
+Name:=&name;
+DOP:=&dateofpayment;
+NOS:=&nameofscheme;
+Status:=&status;
+INSERT INTO Customer VALUES (Cid,Name,DOP,NOS,Status);
+EXCEPTION
+WHEN no_data_found THEN
+dbms_output.put_line('cust doesnt exist');
+END;
+/  2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18  
+Enter value for id: 1
+old   8: Cid:=&id;
+new   8: Cid:=1;
+Enter value for name: 'Jay'
+old   9: Name:=&name;
+new   9: Name:='Jay';
+Enter value for dateofpayment: '24-Mar-2018'
+old  10: DOP:=&dateofpayment;
+new  10: DOP:='24-Mar-2018';
+Enter value for nameofscheme: '499 Rupees'
+old  11: NOS:=&nameofscheme;
+new  11: NOS:='499 Rupees';
+Enter value for status: 'Paid'
+old  12: Status:=&status;
+new  12: Status:='Paid';
+
+PL/SQL procedure successfully completed.
+
+SQL> select * from Customer;
+
+   CUST_ID NAME 					        DATEOFPAYMENT		 NAMEOFSCHEME		  STATUS
+---------- ---------------------------------------------------- ----------------- -------------------- --------------------
+	 1 Jay						      	 24-MAR-18          499 Rupees	          Paid
+
+
+
+======2. Check the number of days (from date of payment), if days are between 15 to 30 then fine amount will be Rs 5per day========
+
+SQL> INSERT INTO Customer values(3, 'Tejas', '14-July-2018', '499 Rupees', 'Not Paid');
+1 row created.
+
+
+declare
+vDiff int;
+Cid int;
+DOP date;
+currDate date;
+Status1 varchar(20);
+BEGIN
+dbms_output.put_line('Enter a customer id');
+Cid:=&id;
+select Status into Status1 from Customer where Cust_id=Cid;
+select DateofPayment into DOP from Customer where Cust_id=Cid;
+currDate:=sysdate();
+vDiff:=currDate-DOP;
+if(Status1='Paid') then
+dbms_output.put_line('Due already paid!');
+ELSE
+BEGIN
+if(vDiff > 30) then
+insert into Fine values(Cid, currDate, vDiff*50);
+update Customer set Status='Paid' where Cust_id=Cid;
+dbms_output.put_line("Fine to be paid for >30days);
+elsif(vDiff < 30 and vDiff > 0) then
+insert into Fine values(Cid, currDate, vDiff*5);
+update Customer set Status='Paid' where Cust_id=Cid;
+dbms_output.put_line("Fine to be paid for <30 days");
+elsif(vdiff < 0) then
+dbms_output.put_line('Paid on time');
+update Customer set Status='Paid' where Cust_id=Cid;
+END IF;
+END;
+END IF;
+EXCEPTION 
+when no_data_found then
+dbms_output.put_line('No such customer exists');
+END;
+/
+
