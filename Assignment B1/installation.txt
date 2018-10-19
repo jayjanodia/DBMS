@@ -1,0 +1,46 @@
+Download Folder: mongodb-linux-x86_64-4.0.1
+
+Go to Bin folder: 
+    cd /home/student/3139/DBMS/mongodb-linux-x86_64-4.0.1/bin
+
+Start MongoDB:
+    ./mongo 10.10.10.54/Te3139db -u te3139 -p te3139
+
+    show dbs;
+
+    use Te3139db
+
+    > db.createCollection('StudentDatabase')                                                                              
+     { "ok" : 1 } 
+
+     db.'StudentDatabase'.drop()
+
+     db.dropDatabase()
+
+Inserting in mongoDB:
+
+    db.StudentDatabase.insert({'RollNumber': '3139', 'Name':'Jay Janodia', 'Year':'III'})\
+
+Finding in mongoDB:
+
+    > db.StudentDatabase.find()
+    { "_id" : ObjectId("5bc9da5a23a169ded8cda1d8"), "RollNumber" : "3139", "Name" : "Jay Janodia", "Year" : "III" }
+
+    > db.StudentDatabase.find().pretty()
+    {
+        "_id" : ObjectId("5bc9da5a23a169ded8cda1d8"),
+        "RollNumber" : "3139",
+        "Name" : "Jay Janodia",
+        "Year" : "III"
+    }
+
+
+Updating in mongoDB:
+
+    > db.StudentDatabase.update({'RollNumber':'3139'}, {$set : {'Name':'Jay M. Janodia'}})
+    WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+Removing from mongoDB:
+
+    > db.StudetDatabase.remove({'RollNumber':{$eq : '3139'}})
+    WriteResult({ "nMatched" : 1})
