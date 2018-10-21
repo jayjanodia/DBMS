@@ -1,0 +1,78 @@
+Indexing:
+
+    Indexing stores  a small portion of the data set in an easy-to-traverse form.
+
+Creating an Index (Use ensureIndex()):
+
+    > db.StudentDatabase.ensureIndex({'Name' : -1})
+    {
+        "createdCollectionAutomatically" : false,
+        "numIndexesBefore" : 1,
+        "numIndexesAfter" : 2,
+        "ok" : 1
+    }
+
+    Entering -1 is for descending order. 1 is for ascending order.
+
+    In ensureIndex() we can pass multiple fields. 
+
+    > db.StudentDatabase.ensureIndex({'RollNumber': 1, 'Name':-1})
+    {
+        "createdCollectionAutomatically" : false,
+        "numIndexesBefore" : 2,
+        "numIndexesAfter" : 3,
+        "ok" : 1
+    }
+
+
+Aggregation:
+
+    Aggregation methods process data records and return computed results. 
+    Values from multiple documents can be grouped together to return a single result. 
+
+Creating an aggregate:
+
+    Suppose you have some data in a collection called student database:
+
+        > db.StudentDatabase.find().pretty()
+    {
+        "_id" : ObjectId("5bc9da3623a169ded8cda1d6"),
+        "RollNumber" : "3121",
+        "Name" : "Mehul Choksi",
+        "Year" : "III"
+    }
+    {
+        "_id" : ObjectId("5bc9da4d23a169ded8cda1d7"),
+        "RollNumber" : "3122",
+        "Name" : "Janhavi Dabak",
+        "Year" : "III"
+    }
+    {
+        "_id" : ObjectId("5bc9da5a23a169ded8cda1d8"),
+        "RollNumber" : "3139",
+        "Name" : "Jay M. Janodia",
+        "Year" : "III"
+    }
+    {
+        "_id" : ObjectId("5bc9da6423a169ded8cda1d9"),
+        "RollNumber" : "3140",
+        "Name" : "Sukhad Joshi",
+        "Year" : "III"
+    }
+    {
+        "_id" : ObjectId("5bcccd21841337697ae3f74c"),
+        "RollNumber" : 4635,
+        "Name" : "Pratik Gupta",
+        "Year" : "IV"
+    }
+
+
+    Now we want to display a list stating how many students are there in each year, you use:
+
+        > db.StudentDatabase.aggregate({$group:{_id:'$Year', num_student:{$sum:1}}})
+            { "_id" : "IV", "num_student" : 1 }
+            { "_id" : "III", "num_student" : 4 }
+
+            4 students are from 3rd year, 1 student is from 1st year
+
+
